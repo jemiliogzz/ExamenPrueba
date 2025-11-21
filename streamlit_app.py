@@ -2,9 +2,6 @@ import streamlit as st
 import random
 from snowflake.snowpark.functions import col
 
-# Clear cache
-st.cache_data.clear()
-st.cache_resource.clear()
 
 # Function to inject custom CSS
 def inject_custom_css():
@@ -326,6 +323,10 @@ if st.session_state.examen_completado:
             # Add subdomain in format 'domain_id'.'subdomain'
             subdominio = f"{pregunta.DOMAIN_ID}.{pregunta.SUBDOMAIN}"
             subdominios_errores.add(subdominio)
+    
+    # Clear cache
+    st.cache_data.clear()
+    st.cache_resource.clear()
     
     # Display statistics
     total_preguntas = len(preguntas)
