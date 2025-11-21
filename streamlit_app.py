@@ -327,7 +327,7 @@ if st.session_state.examen_completado:
     # Clear cache
     st.cache_data.clear()
     st.cache_resource.clear()
-    
+
     # Display statistics
     total_preguntas = len(preguntas)
     porcentaje = (aciertos / total_preguntas * 100) if total_preguntas > 0 else 0
@@ -366,10 +366,6 @@ if st.session_state.examen_completado:
     
     st.divider()
     
-    # Display subdomains with errors
-    st.markdown("""
-    <div class="exam-container">
-    """, unsafe_allow_html=True)
     
     if subdominios_errores:
         st.subheader("🔍 Subdomains where you made mistakes:")
