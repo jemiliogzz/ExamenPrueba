@@ -332,9 +332,7 @@ if st.session_state.examen_completado:
     total_preguntas = len(preguntas)
     porcentaje = (aciertos / total_preguntas * 100) if total_preguntas > 0 else 0
     
-    st.markdown("""
-    <div class="results-container">
-    """, unsafe_allow_html=True)
+    
     
     col1, col2, col3 = st.columns(3)
     
