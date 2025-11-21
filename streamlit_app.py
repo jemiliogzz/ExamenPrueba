@@ -179,7 +179,7 @@ def inicializar_respuestas_mezcladas(preguntas):
 if not st.session_state.examen_iniciado:
     st.markdown("""
     <div style="text-align: center; padding: 40px;">
-        <h1 style="color: #0277BD; font-size: 48px; margin-bottom: 20px;">❄️ Exam</h1>
+        <h1 style="color: #0277BD; font-size: 48px; margin-bottom: 20px;">Exam</h1>
         <p style="color: #01579B; font-size: 20px; margin-bottom: 30px;">
             Answer the questions and demonstrate your knowledge
         </p>
@@ -188,7 +188,7 @@ if not st.session_state.examen_iniciado:
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("🚀 Start Exam", use_container_width=True):
+        if st.button("Start Exam", use_container_width=True):
             preguntas = obtener_preguntas()
             if preguntas:
                 st.session_state.preguntas = preguntas
@@ -202,7 +202,7 @@ if not st.session_state.examen_iniciado:
             else:
                 st.error("Could not load questions. Please check your Snowflake connection.")
 
-# Display exam (one question at a time)
+# Display exam
 if st.session_state.examen_iniciado and not st.session_state.examen_completado:
     preguntas = st.session_state.preguntas
     
@@ -256,24 +256,24 @@ if st.session_state.examen_iniciado and not st.session_state.examen_completado:
         col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
         
         with col1:
-            if st.button("⏮️ First", use_container_width=True):
+            if st.button("First", use_container_width=True):
                 st.session_state.pregunta_actual = 0
                 st.rerun()
         
         with col2:
-            if st.button("◀️ Previous", use_container_width=True, disabled=(pregunta_idx == 0)):
+            if st.button("Previous", use_container_width=True, disabled=(pregunta_idx == 0)):
                 if pregunta_idx > 0:
                     st.session_state.pregunta_actual -= 1
                     st.rerun()
         
         with col3:
-            if st.button("Next ▶️", use_container_width=True, disabled=(pregunta_idx == total_preguntas - 1)):
+            if st.button("Next", use_container_width=True, disabled=(pregunta_idx == total_preguntas - 1)):
                 if pregunta_idx < total_preguntas - 1:
                     st.session_state.pregunta_actual += 1
                     st.rerun()
         
         with col4:
-            if st.button("⏭️ Last", use_container_width=True):
+            if st.button("Last", use_container_width=True):
                 st.session_state.pregunta_actual = total_preguntas - 1
                 st.rerun()
         
@@ -286,12 +286,12 @@ if st.session_state.examen_iniciado and not st.session_state.examen_completado:
             todas_respondidas = len(st.session_state.respuestas_usuario) == total_preguntas
             
             if todas_respondidas:
-                if st.button("✅ Finish Exam", use_container_width=True, type="primary"):
+                if st.button("Finish Exam", use_container_width=True, type="primary"):
                     st.session_state.examen_completado = True
                     st.rerun()
             else:
                 faltantes = total_preguntas - len(st.session_state.respuestas_usuario)
-                st.warning(f"⚠️ You have {faltantes} question(s) left to answer")
+                st.warning(f"You have {faltantes} question(s) left to answer")
                 if st.button("Finish anyway", use_container_width=True):
                     st.session_state.examen_completado = True
                     st.rerun()
@@ -300,7 +300,7 @@ if st.session_state.examen_iniciado and not st.session_state.examen_completado:
 if st.session_state.examen_completado:
     st.markdown("""
     <div style="text-align: center; padding: 20px;">
-        <h1 style="color: #0277BD; font-size: 42px; margin-bottom: 10px;">📊 Exam Results</h1>
+        <h1 style="color: #0277BD; font-size: 42px; margin-bottom: 10px;">Exam Results</h1>
     </div>
     """, unsafe_allow_html=True)
     
@@ -332,41 +332,44 @@ if st.session_state.examen_completado:
     total_preguntas = len(preguntas)
     porcentaje = (aciertos / total_preguntas * 100) if total_preguntas > 0 else 0
     
-    
+    # Determine pass/fail status
+    passed = porcentaje > 75
+    status_text = "PASS" if passed else "FAILED"
+    status_color = "#2E7D32" if passed else "#C62828"
+    status_bg = "#E8F5E9" if passed else "#FFE0E0"
+    status_border = "#4CAF50" if passed else "#D32F2F"
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown(f"""
-        <div class="metric-box">
-            <h2 style="color: #0277BD; margin: 0;">✅ Correct</h2>
-            <p style="font-size: 36px; font-weight: bold; color: #01579B; margin: 10px 0;">{aciertos}</p>
+        <div class="metric-box" style="background: linear-gradient(135deg, #E6F7FF 0%, #B3E5FC 100%); border: 2px solid #29B5E8;">
+            <h2 style="color: #0277BD; margin: 0;">Score</h2>
+            <p style="font-size: 36px; font-weight: bold; color: #01579B; margin: 10px 0;">{aciertos}/{total_preguntas}</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
         st.markdown(f"""
-        <div class="metric-box">
-            <h2 style="color: #0277BD; margin: 0;">❌ Incorrect</h2>
-            <p style="font-size: 36px; font-weight: bold; color: #01579B; margin: 10px 0;">{errores}</p>
+        <div class="metric-box" style="background: linear-gradient(135deg, #E6F7FF 0%, #B3E5FC 100%); border: 2px solid #29B5E8;">
+            <h2 style="color: #0277BD; margin: 0;">Percentage</h2>
+            <p style="font-size: 36px; font-weight: bold; color: #01579B; margin: 10px 0;">{porcentaje:.1f}%</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
         st.markdown(f"""
-        <div class="metric-box">
-            <h2 style="color: #0277BD; margin: 0;">📈 Percentage</h2>
-            <p style="font-size: 36px; font-weight: bold; color: #01579B; margin: 10px 0;">{porcentaje:.1f}%</p>
+        <div class="metric-box" style="background: {status_bg}; border: 2px solid {status_border};">
+            <h2 style="color: {status_color}; margin: 0;">Status</h2>
+            <p style="font-size: 36px; font-weight: bold; color: {status_color}; margin: 10px 0;">{status_text}</p>
         </div>
         """, unsafe_allow_html=True)
-    
-    st.markdown("</div>", unsafe_allow_html=True)
     
     st.divider()
     
     
     if subdominios_errores:
-        st.subheader("🔍 Subdomains where you made mistakes:")
+        st.subheader("Subdomains where you made mistakes:")
         subdominios_ordenados = sorted(subdominios_errores)
         for subdominio in subdominios_ordenados:
             st.markdown(f"""
@@ -377,16 +380,14 @@ if st.session_state.examen_completado:
     else:
         st.markdown("""
         <div style="background: #E8F5E9; border-left: 4px solid #4CAF50; padding: 15px; border-radius: 5px; text-align: center;">
-            <p style="color: #2E7D32; font-size: 18px; margin: 0;">🎉 Excellent! You had no errors in any subdomain.</p>
+            <p style="color: #2E7D32; font-size: 18px; margin: 0;">Excellent! You had no errors in any subdomain.</p>
         </div>
         """, unsafe_allow_html=True)
-    
-    st.markdown("</div>", unsafe_allow_html=True)
     
     st.divider()
     
     # Answer details
-    with st.expander("📋 View answer details", expanded=False):
+    with st.expander("View answer details", expanded=False):
         for idx, pregunta in enumerate(preguntas):
             respuesta_correcta = pregunta.CORRECT
             respuesta_usuario = respuestas_usuario.get(idx, "")
@@ -395,13 +396,13 @@ if st.session_state.examen_completado:
             if es_correcta:
                 st.markdown(f"""
                 <div style="background: #E8F5E9; border-left: 4px solid #4CAF50; padding: 15px; margin: 10px 0; border-radius: 5px;">
-                    <strong style="color: #2E7D32;">Question {idx + 1}: ✅ Correct</strong>
+                    <strong style="color: #2E7D32;">Question {idx + 1}: Correct</strong>
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                 <div style="background: #FFE0E0; border-left: 4px solid #D32F2F; padding: 15px; margin: 10px 0; border-radius: 5px;">
-                    <strong style="color: #C62828;">Question {idx + 1}: ❌ Incorrect</strong>
+                    <strong style="color: #C62828;">Question {idx + 1}: Incorrect</strong>
                 </div>
                 """, unsafe_allow_html=True)
             
@@ -414,7 +415,7 @@ if st.session_state.examen_completado:
     # Button to restart exam
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("🔄 Restart Exam", use_container_width=True):
+        if st.button("Restart Exam", use_container_width=True):
             st.session_state.examen_iniciado = False
             st.session_state.preguntas = []
             st.session_state.respuestas_usuario = {}
